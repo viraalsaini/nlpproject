@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
@@ -10,14 +11,15 @@ import torch
 from torch.nn.functional import softmax
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for cross-origin requests
 
 # Paths to model folders
-sentiment_model_path = r"NLPProjectModels/sentiment_model"
-sentiment_tokenizer_path = r"NLPProjectModels/sentiment_tokenizer"
-translate_it_to_eng_model_path = r"NLPProjectModels/translation_ita_to_eng_model"
-translate_it_to_eng_tokenizer_path = r"NLPProjectModels/translation_ita_to_eng_tokenizer"
-translate_eng_to_it_model_path = r"NLPProjectModels/translation_model_en_to_it"
-translate_eng_to_it_tokenizer_path = r"NLPProjectModels/translation_tokenizer_en_to_it"
+sentiment_model_path = "NLPProjectModels/sentiment_model"
+sentiment_tokenizer_path = "NLPProjectModels/sentiment_tokenizer"
+translate_it_to_eng_model_path = "NLPProjectModels/translation_ita_to_eng_model"
+translate_it_to_eng_tokenizer_path = "NLPProjectModels/translation_ita_to_eng_tokenizer"
+translate_eng_to_it_model_path = "NLPProjectModels/translation_model_en_to_it"
+translate_eng_to_it_tokenizer_path = "NLPProjectModels/translation_tokenizer_en_to_it"
 
 # Load models and tokenizers
 sentiment_model = AutoModelForSequenceClassification.from_pretrained(sentiment_model_path)
@@ -35,7 +37,7 @@ pos_pipeline = pipeline("token-classification", model="vblagoje/bert-english-unc
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "NLP Backend Running!"
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -82,6 +84,3 @@ def analyze():
         "ner": ner_entities,
         "pos": pos_tags
     })
-
-if __name__ == '__main__':
-    app.run(debug=True)
